@@ -1,0 +1,44 @@
+name: Vue.js CI/CD to Aliyun ECS
+ 
+on:
+  push:
+    branches: [ main ]
+ 
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build
+      run: npm run build
+      
+    - name: Deploy to Aliyun ECS
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.ALIYUN_HOST }}
+        username: ${{ secrets.ALIYUN_USERNAME }}
+        key: ${{ secrets.ALIYUN_SSH_PRIVATE_KEY }}
+        source: "dist/*"
+        target: "/path/to/your/nginx/directory"
+        strip_components: 1
+        
+    - name: Execute remote commands
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.ALIYUN_HOST }}
+        username: ${{ secrets.ALIYUN_USERNAME }}
+        key: ${{ secrets.ALIYUN_SSH_PRIVATE_KEY }}
+        script: |
+          sudo chown -R www-data:www-data /path/to/your/nginx/directory
+          sudo chmod -R 755 /path/to/your/nginx/directory
+          sudo systemctl reload nginx
