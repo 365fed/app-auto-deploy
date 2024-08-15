@@ -1,4 +1,4 @@
-name: React CI/CD to Aliyun ECS
+name: Vue CI/CD to Aliyun ECS
  
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16'
+        node-version: '16.12.0'
         
     - name: Install dependencies
       run: npm install
@@ -29,7 +29,7 @@ jobs:
         username: ${{ secrets.ALIYUN_USERNAME }}
         key: ${{ secrets.ALIYUN_SSH_PRIVATE_KEY }}
         source: "dist/*"
-        target: "/path/to/your/nginx/directory"
+        target: "/var/www/app-auto-deploy"
         strip_components: 1
         
     - name: Execute remote commands
@@ -39,6 +39,6 @@ jobs:
         username: ${{ secrets.ALIYUN_USERNAME }}
         key: ${{ secrets.ALIYUN_SSH_PRIVATE_KEY }}
         script: |
-          sudo chown -R www-data:www-data /path/to/your/nginx/directory
-          sudo chmod -R 755 /path/to/your/nginx/directory
+          sudo chown -R www-data:www-data /var/www/app-auto-deploy
+          sudo chmod -R 755 /var/www/app-auto-deploy
           sudo systemctl reload nginx
