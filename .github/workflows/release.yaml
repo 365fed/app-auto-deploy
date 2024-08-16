@@ -9,12 +9,11 @@ on:
         description: Choose runner to run
         type: choice
         options:
-          - atc-ubuntu-latest
-          - tsp-ubuntu-runner
+          - ubuntu-latest
         required: false
-        default: atc-ubuntu-latest
+        default: ubuntu-latest
 
-run-name: ${{ format('Release {0} to prod-cn using {1}', github.ref_name, inputs.runners) }}
+run-name: ${{ format('Release {0} to prod using {1}', github.ref_name, inputs.runners) }}
 
 permissions:
   contents: read
@@ -30,5 +29,5 @@ jobs:
     uses: ./.github/workflows/deploy-reusable.yaml
     secrets: inherit
     with:
-      environment: prod-cn
+      environment: prod
       runners: ${{ inputs.runners }}
