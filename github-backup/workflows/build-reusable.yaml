@@ -1,0 +1,31 @@
+name: Reusable Build Workflow
+on:
+  workflow_call:
+    inputs:
+      runners:
+        description: Choose runner to run
+        type: string
+        default: atc-ubuntu-latest
+
+env:
+  NODE_VERSION: 16.20.1
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runners }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Publish to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/

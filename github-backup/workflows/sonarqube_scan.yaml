@@ -1,0 +1,33 @@
+name: SonarQube Scan
+
+on:
+  workflow_dispatch:
+    branches:
+      - master
+      - release
+      - develop
+      - feature/*
+      - hotfix/*
+      - bugfix/*
+
+run-name: ${{ format('Run Sonar Scan from {0} branch', github.ref_name) }}
+
+jobs:
+  extract-project-version:
+    runs-on: [atc-ubuntu-latest]
+    outputs:
+      project-version: ${{ steps.project-version-string.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Extract Project Version
+        id: project-version-string
+        run: |
+          echo version=$(sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./package.json) >> $GITHUB_OUTPUT
+
+  sonar-scan:
+    needs: [extract-project-version]
+    uses: TSPCloudPlatform/reusable-workflows/.github/workflows/sonarqube-scan-reusable.yaml@v0.1.5
+    secrets: inherit
+    with:
+      project-version: ${{ needs.extract-project-version.outputs.project-version }}

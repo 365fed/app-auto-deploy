@@ -1,0 +1,31 @@
+name: Auto Build & Deploy in Non-Prod
+
+on:
+  push:
+    branches:
+      - release
+      - develop
+      - feature/*
+      - hotfix/*
+      - bugfix/*
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-reusable.yaml
+
+  deploy-to-dev:
+    needs: [build]
+    uses: ./.github/workflows/deploy-reusable.yaml
+    secrets: inherit
+    with:
+      environment: dev
+
+  deploy-to-demo:
+    needs: [build]
+    uses: ./.github/workflows/deploy-reusable.yaml
+    secrets: inherit
+    with:
+      environment: demo

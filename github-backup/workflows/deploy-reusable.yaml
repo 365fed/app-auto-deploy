@@ -1,0 +1,59 @@
+name: Reusable Deploy Workflow
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Choose environment to deploy
+        type: string
+        default: dev
+      runners:
+        description: Choose runner to run
+        type: string
+        default: atc-ubuntu-latest
+
+env:
+  AWS_PROFILE: ${{ vars.AWS_PROFILE }}
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ENVIRONMENT: ${{ inputs.environment }}
+  NODE_VERSION: 16.20.1
+  SSP_FRONTEND_URL: ${{ vars.SSP_FRONTEND_URL }}
+
+jobs:
+  deploy:
+    runs-on: ${{ inputs.runners }}
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Download from Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist/
+      - name: Add profile credentials to ~/.aws/credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws configure list-profiles
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile $AWS_PROFILE
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile $AWS_PROFILE
+          aws configure list-profiles
+          aws s3 ls --profile $AWS_PROFILE
+      - name: Install Dependencies
+        run: npm install
+      - name: Deploy to AWS S3 Bucket
+        run: npm run deploy:$ENVIRONMENT
+      - name: Extract version
+        run: |
+          PACKAGE_VERSION=$(sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./package.json)
+          echo PACKAGE_VERSION=$PACKAGE_VERSION >> $GITHUB_ENV
+      - name: Output to Task Summary
+        run: |
+          echo "Deploy version $PACKAGE_VERSION to $ENVIRONMENT" >> $GITHUB_STEP_SUMMARY
+          echo ":rocket: Validate via URL: [OPCP -> Self Service Portal]($SSP_FRONTEND_URL)" >> $GITHUB_STEP_SUMMARY

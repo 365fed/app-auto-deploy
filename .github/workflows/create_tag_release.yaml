@@ -1,0 +1,25 @@
+name: Create Tag & Release
+
+on:
+  workflow_dispatch:
+    branches:
+      - release
+    inputs:
+      custom-tag:
+        description: Custom tag name (x.x.x). If specified, it overrides bump settings.
+        type: string
+        required: false
+      create-release:
+        description: Create GH release for tag
+        default: false
+        type: boolean
+
+run-name: Create tag from ${{ github.ref_name }} with custom-tag = ${{ inputs.custom-tag }}, create-release = ${{ inputs.create-release }}
+
+jobs:
+  create-tag-with-release:
+    uses: TSPCloudPlatform/reusable-workflows/.github/workflows/create-tag-with-release-reusable.yaml@v0.2.1
+    with:
+      release-branches: release
+      custom-tag: ${{ inputs.custom-tag }}
+      create-release: ${{ inputs.create-release }}

@@ -5,7 +5,7 @@
       <div class="banner-container">
         <!-- 联系方式 -->
         <h1 class="blog-title animated zoomIn">
-          琼阳的个人博客 - Stronger
+          琼阳的个人博客
         </h1>
         <!-- 一言 -->
         <div class="blog-intro">

@@ -2,7 +2,7 @@ name: Vue.js CI/CD to Aliyun ECS
 
 on:
   push:
-    branches: [ demo ]
+    branches: [ main ]
 
 jobs:
   prod-build-and-deploy:
