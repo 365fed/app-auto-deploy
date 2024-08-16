@@ -18,7 +18,7 @@ run-name: Create tag from ${{ github.ref_name }} with custom-tag = ${{ inputs.cu
 
 jobs:
   create-tag-with-release:
-    uses: TSPCloudPlatform/reusable-workflows/.github/workflows/create-tag-with-release-reusable.yaml@v0.2.1
+    uses: ./.github/workflows/create-tag-with-release-reusable.yaml@v0.2.1
     with:
       release-branches: release
       custom-tag: ${{ inputs.custom-tag }}
