@@ -21,10 +21,10 @@ on:
         description: Choose runner to run
         type: choice
         options:
-          - atc-ubuntu-latest
+          - ubuntu-latest
           - tsp-ubuntu-runner
         required: false
-        default: atc-ubuntu-latest
+        default: ubuntu-latest
 
 run-name: ${{ format('Build and deploy from {0} to {1} using runners {2}', github.ref_name, inputs.environment, inputs.runners) }}
 
