@@ -3,7 +3,6 @@ name: Manual Build & Deploy in Non-Prod
 on:
   workflow_dispatch:
     branches:
-      - main
       - release
       - develop
       - feature/*
@@ -22,7 +21,6 @@ on:
         type: choice
         options:
           - ubuntu-latest
-          - tsp-ubuntu-runner
         required: false
         default: ubuntu-latest
 

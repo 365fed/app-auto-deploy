@@ -3,7 +3,6 @@ name: Auto Build & Deploy in Non-Prod
 on:
   push:
     branches:
-      - main
       - release
       - develop
       - feature/*
